@@ -1,0 +1,8 @@
+{
+  "name": "fitness-store-mongodb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fitness product CRUD operations using Node.js and MongoDB",
+  "scripts": { "start": "node app.js" },
+  "dependencies": { "mongodb": "7.5.0" }
+}

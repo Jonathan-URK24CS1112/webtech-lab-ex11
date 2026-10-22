@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fitness Store - MongoDB Operations</title>
+<style>
+* { box-sizing: border-box; }
+body { margin:0; background:#f5f4f1; color:#292929;
+  font:16px Arial,sans-serif; line-height:1.6; }
+header { background:#3e4544; color:#fff; padding:22px 26px;
+  border-bottom:4px solid #b48c69; }
+header h1 { font-size:25px; margin:0; }
+main { max-width:980px; margin:24px auto; padding:0 20px; }
+h2 { font-size:22px; margin:0 0 8px; }
+p { margin:8px 0 16px; }
+.notice { color:#565656; font-size:14px; }
+.panel { background:#fff; border:1px solid #d8d5ce;
+  border-radius:5px; padding:22px; margin:18px 0; }
+nav { display:flex; gap:10px; flex-wrap:wrap; margin:18px 0; }
+button { font:inherit; cursor:pointer; border:1px solid #bdb7ae;
+  border-radius:4px; background:#fff; color:#333; padding:8px 20px; }
+button:hover { background:#eee9e2; }
+button[aria-pressed="true"] { background:#795b42; color:#fff;
+  border-color:#795b42; }
+.method { color:#795b42; font:15px monospace; }
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; margin-top:14px; }
+th,td { text-align:left; padding:12px; border:1px solid #ddd8d0; }
+th { background:#f2eee8; }
+pre { background:#f6f5f2; border:1px solid #e0ddd7; padding:14px;
+  font:14px/1.6 monospace; overflow:auto; }
+summary { cursor:pointer; color:#795b42; }
+footer { color:#666; text-align:center; font-size:14px; padding:12px; }
+@media(max-width:600px) {
+  button { padding:7px 13px; } .panel { padding:16px; }
+}
+</style>
+</head>
+<body>
+<header><h1>Fitness Equipment Store</h1></header>
+<main>
+<h2>MongoDB Product Operations</h2>
+<p>View each stage of the product database program.</p>
+<p class="notice">Recorded execution output. The live MongoDB operations run locally through app.js.</p>
+<nav aria-label="Operation stages">
+<button type="button" data-stage="0">Create</button>
+<button type="button" data-stage="1">Read</button>
+<button type="button" data-stage="2">Update</button>
+<button type="button" data-stage="3">Delete</button>
+</nav>
+<section class="panel" aria-live="polite">
+<h2 id="stage-title"></h2>
+<div class="method" id="method"></div>
+<p id="message"></p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead>
+<tbody id="records"></tbody>
+</table>
+</div>
+<details><summary>View database document</summary><pre id="document"></pre></details>
+</section>
+<section class="panel">
+<h2>Program Output</h2>
+<details><summary>View full recorded terminal output</summary><pre id="transcript"></pre></details>
+</section>
+</main>
+<footer>Fitness Store Database Integration</footer>
+<script>
+const stages = [
+  {
+    "title": "Create",
+    "method": "insertOne()",
+    "message": "Inserted 1 product",
+    "records": [
+      {
+        "_id": "6ad95e04cc2fa56ab4b7780d",
+        "name": "Dumbbell Set",
+        "category": "Strength",
+        "price": 2499,
+        "stock": 12
+      }
+    ]
+  },
+  {
+    "title": "Read",
+    "method": "find()",
+    "message": "Retrieved product records",
+    "records": [
+      {
+        "_id": "6ad95e04cc2fa56ab4b7780d",
+        "name": "Dumbbell Set",
+        "category": "Strength",
+        "price": 2499,
+        "stock": 12
+      }
+    ]
+  },
+  {
+    "title": "Update",
+    "method": "updateOne()",
+    "message": "Updated 1 document: price changed from Rs. 2,499 to Rs. 2,299",
+    "records": [
+      {
+        "_id": "6ad95e04cc2fa56ab4b7780d",
+        "name": "Dumbbell Set",
+        "category": "Strength",
+        "price": 2299,
+        "stock": 12
+      }
+    ]
+  },
+  {
+    "title": "Delete",
+    "method": "deleteOne()",
+    "message": "Deleted 1 document. Matching records after deletion: 0",
+    "records": []
+  }
+];
+const transcript = "node app.js\nConnected to MongoDB successfully\n\nCREATE\nInserted ID: 6ad95e04cc2fa56ab4b7780d\n\nREAD\n[\n  {\n    \"_id\": \"6ad95e04cc2fa56ab4b7780d\",\n    \"name\": \"Dumbbell Set\",\n    \"category\": \"Strength\",\n    \"price\": 2499,\n    \"stock\": 12\n  }\n]\n\nUPDATE\nUpdated documents: 1\n{\n  \"_id\": \"6ad95e04cc2fa56ab4b7780d\",\n  \"name\": \"Dumbbell Set\",\n  \"category\": \"Strength\",\n  \"price\": 2299,\n  \"stock\": 12\n}\n\nDELETE\nDeleted documents: 1\nMatching records after deletion: 0\n\nMongoDB connection closed\n";
+document.getElementById('transcript').textContent = transcript;
+function showStage(index) {
+  const stage = stages[index];
+  document.getElementById('stage-title').textContent = stage.title;
+  document.getElementById('method').textContent = stage.method;
+  document.getElementById('message').textContent = stage.message;
+  const body = document.getElementById('records');
+  body.replaceChildren();
+  for (const record of stage.records) {
+    const row = body.insertRow();
+    for (const value of [record.name, record.category,
+      'Rs. ' + record.price.toLocaleString('en-IN'), record.stock]) {
+      row.insertCell().textContent = value;
+    }
+  }
+  if (stage.records.length === 0) {
+    const cell = body.insertRow().insertCell();
+    cell.colSpan = 4;
+    cell.textContent = 'No matching product records.';
+  }
+  document.getElementById('document').textContent =
+    JSON.stringify(stage.records, null, 2);
+  document.querySelectorAll('[data-stage]').forEach((button, i) => {
+    button.setAttribute('aria-pressed', String(i === index));
+  });
+}
+document.querySelectorAll('[data-stage]').forEach(button => {
+  button.addEventListener('click', () => showStage(Number(button.dataset.stage)));
+});
+showStage(0);
+</script>
+</body>
+</html>
